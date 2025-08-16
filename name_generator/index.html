@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宝宝起名神器</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="characters_2000.js"></script>
+    <script src="characters_3500.js"></script>
+    <script src="characters_all.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <header class="header">
+                <h1 class="title">
+                    <i class="fas fa-baby"></i>
+                    宝宝起名神器
+                </h1>
+                <p class="subtitle">为您的宝贝起一个美好的名字</p>
+            </header>
+
+            <main class="main-content">
+                <div class="input-section">
+                    <div class="form-group">
+                        <label for="surname">
+                            <i class="fas fa-user"></i>
+                            宝宝姓氏
+                        </label>
+                        <input 
+                            id="surname"
+                            type="text" 
+                            v-model="surname" 
+                            placeholder="请输入姓氏（如：张、李、王）"
+                            maxlength="2"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-list-ol"></i>
+                            名字字数（含姓氏）
+                        </label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" v-model="nameLength" value="2">
+                                <span class="radio-custom"></span>
+                                2个字
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" v-model="nameLength" value="3">
+                                <span class="radio-custom"></span>
+                                3个字
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" v-model="nameLength" value="4">
+                                <span class="radio-custom"></span>
+                                4个字
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" v-model="nameLength" value="5">
+                                <span class="radio-custom"></span>
+                                5个字
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" v-model="nameLength" value="6">
+                                <span class="radio-custom"></span>
+                                6个字
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-database"></i>
+                            字库选择
+                        </label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" v-model="selectedLibrary" value="built-in">
+                                <span class="radio-custom"></span>
+                                {{ getLibraryInfo('built-in').name }} ({{ getLibraryInfo('built-in').size }}字)
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" v-model="selectedLibrary" value="2000">
+                                <span class="radio-custom"></span>
+                                {{ getLibraryInfo('2000').name }} ({{ getLibraryInfo('2000').size }}字)
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" v-model="selectedLibrary" value="3500">
+                                <span class="radio-custom"></span>
+                                {{ getLibraryInfo('3500').name }} ({{ getLibraryInfo('3500').size }}字)
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" v-model="selectedLibrary" value="all">
+                                <span class="radio-custom"></span>
+                                {{ getLibraryInfo('all').name }} ({{ getLibraryInfo('all').size }}字)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nameCount">
+                            <i class="fas fa-sort-numeric-up"></i>
+                            生成名字数量
+                        </label>
+                        <select id="nameCount" v-model="nameCount" class="select-input">
+                            <option value="10">10个</option>
+                            <option value="20">20个</option>
+                            <option value="30">30个</option>
+                            <option value="50">50个</option>
+                            <option value="100">100个</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="columnsCount">
+                            <i class="fas fa-columns"></i>
+                            每行显示数量
+                        </label>
+                        <select id="columnsCount" v-model="columnsCount" class="select-input">
+                            <option value="3">3个</option>
+                            <option value="4">4个</option>
+                            <option value="5">5个</option>
+                            <option value="6">6个</option>
+                            <option value="8">8个</option>
+                            <option value="10">10个</option>
+                        </select>
+                    </div>
+
+                    <button 
+                        class="generate-btn" 
+                        @click="generateName"
+                        :disabled="!surname.trim()"
+                    >
+                        <i class="fas fa-magic"></i>
+                        生成名字
+                    </button>
+                </div>
+
+                <div class="result-section" v-if="generatedNames.length > 0">
+                    <h3 class="result-title">
+                        <i class="fas fa-heart"></i>
+                        为您推荐的名字
+                    </h3>
+                    <div class="names-grid" :style="{ gridTemplateColumns: `repeat(${columnsCount}, 1fr)` }">
+                        <div 
+                            class="name-card" 
+                            v-for="(name, index) in generatedNames" 
+                            :key="index"
+                            @click="selectName(name)"
+                            :class="{ selected: selectedName === name }"
+                        >
+                            <span class="full-name">{{ name }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="secondary-btn" @click="generateName">
+                            <i class="fas fa-refresh"></i>
+                            重新生成
+                        </button>
+                        <button 
+                            class="copy-btn" 
+                            @click="copyName"
+                            v-if="selectedName"
+                        >
+                            <i class="fas fa-copy"></i>
+                            复制选中的名字
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tips-section">
+                    <h4>
+                        <i class="fas fa-lightbulb"></i>
+                        起名小贴士
+                    </h4>
+                    <ul>
+                        <li>选择寓意美好的字，如：慧、雅、轩、涵等</li>
+                        <li>注意名字的音韵搭配，避免谐音不雅</li>
+                        <li>考虑字的笔画搭配，整体协调美观</li>
+                        <li>可以结合家族传统或特殊意义</li>
+                    </ul>
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>&copy; 宝宝起名神器 - 用心为每个宝贝起好名字</p>
+            </footer>
+        </div>
+
+        <!-- 复制成功提示 -->
+        <div class="toast" :class="{ show: showToast }">
+            <i class="fas fa-check"></i>
+            名字已复制到剪贴板
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
