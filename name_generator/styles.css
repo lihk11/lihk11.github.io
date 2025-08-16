@@ -3,6 +3,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    /* 防止移动端双击放大 */
+    touch-action: manipulation;
 }
 
 body {
@@ -83,6 +85,8 @@ input[type="text"] {
     width: 100%;
     padding: 15px 20px;
     font-size: 1rem;
+    /* 防止移动端双击放大 */
+    touch-action: manipulation;
     border: 2px solid #e1e5e9;
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -100,6 +104,8 @@ input[type="text"]:focus {
     width: 100%;
     padding: 15px 20px;
     font-size: 1rem;
+    /* 防止移动端双击放大 */
+    touch-action: manipulation;
     border: 2px solid #e1e5e9;
     border-radius: 12px;
     background: #f8f9fa;
@@ -177,6 +183,8 @@ input[type="text"]:focus {
     font-size: 1.2rem;
     font-weight: 600;
     color: white;
+    /* 防止移动端双击放大 */
+    touch-action: manipulation;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
     border-radius: 12px;
@@ -235,6 +243,8 @@ input[type="text"]:focus {
     position: relative;
     overflow: hidden;
     min-height: 50px;
+    /* 防止移动端双击放大 */
+    touch-action: manipulation;
     display: flex;
     align-items: center;
     justify-content: center;
